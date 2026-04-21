@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Creative Landing</title>
+    <style>
+        :root {
+            --bg: #050509;
+            --primary: #ff3366;
+            --secondary: #22d3ee;
+            --text: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --ease: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            perspective: 1000px; /* Для 3D эффектов */
+        }
+
+        /* === 1. PREMIUM LOADER === */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.8s var(--ease);
+        }
+
+        .cube-wrapper {
+            width: 60px; height: 60px;
+            perspective: 1000px;
+        }
+
+        .cube {
+            width: 100%; height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: cubeRotate 2s infinite var(--ease);
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 100%; height: 100%;
+            border: 2px solid var(--primary);
+            opacity: 0.8;
+        }
+
+        .front  { transform: translateZ(30px); border-color: var(--primary); }
+        .back   { transform: rotateY(180deg) translateZ(30px); border-color: var(--secondary); }
+        .top    { transform: rotateX(90deg) translateZ(30px); }
+        .bottom { transform: rotateX(-90deg) translateZ(30px); }
+        .left   { transform: rotateY(-90deg) translateZ(30px); }
+        .right  { transform: rotateY(90deg) translateZ(30px); }
+
+        @keyframes cubeRotate {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* === 2. LAYOUT & SECTIONS === */
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10vh 10%;
+            opacity: 0; /* Скрыто до загрузки */
+            transition: opacity 1s var(--ease);
+        }
+
+        body.loaded section { opacity: 1; }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* === 3. STAGGERED 3D REVEAL (Появление) === */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px) rotateX(-15deg);
+            transition: opacity 1s var(--ease), transform 1s var(--ease);
+            will-change: transform, opacity;
+        }
+
+        .loaded .reveal.active {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+        }
+
+        /* Задержки для каскадного появления */
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+
+        /* === 4. BUTTONS & HOVERS (Magnetic + Shine) === */
+        .btn-wrapper {
+            display: inline-block;
+            position: relative;
+            margin-top: 40px;
+        }
+
+        .btn {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 18px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: background 0.3s, border 0.3s, transform 0.1s linear; /* Fast transform for magnetic */
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* Световой блик при наведении */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s var(--ease);
+            z-index: -1;
+        }
+
+        .btn:hover {
+            border-color: var(--primary);
+            background: rgba(255, 51, 102, 0.1);
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        /* === 5. CARDS & HOVERS (Tilt effect) === */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 80px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 40px;
+            border-radius: 24px;
+            text-align: left;
+            transition: border 0.3s var(--ease), box-shadow 0.3s var(--ease);
+            transform-style: preserve-3d; /* Важно для Tilt */
+            will-change: transform;
+        }
+
+        .card:hover {
+            border-color: rgba(255,255,255,0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--secondary);
+            transform: translateZ(30px); /* Вынос текста в 3D */
+        }
+
+        .card p {
+            color: rgba(255,255,255,0.7);
+            line-height: 1.6;
+            transform: translateZ(15px);
+        }
+
+        /* Typography */
+        h1 { font-size: 64px; line-height: 1.1; margin-bottom: 20px; font-weight: 800; }
+        h1 span { color: var(--primary); }
+        @media (max-width: 768px) { h1 { font-size: 40px; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="cube-wrapper">
+            <div class="cube">
+                <div class="cube-face front"></div>
+                <div class="cube-face back"></div>
+                <div class="cube-face top"></div>
+                <div class="cube-face bottom"></div>
+                <div class="cube-face left"></div>
+                <div class="cube-face right"></div>
+            </div>
+        </div>
+    </div>
+
+    <section>
+        <div class="container">
+            <h1 class="reveal delay-1">Creative <span>Motion</span><br> Design Experience</h1>
+            <p class="reveal delay-2" style="max-width: 600px; margin: 0 auto; color: rgba(255,255,255,0.7);">Почувствуйте разницу с премиальными анимациями. Плавность, глубина и интерактивность.</p>
+            <div class="btn-wrapper reveal delay-3">
+                <button class="btn magnetic-btn">Исследовать эффекты</button>
+            </div>
+        </div>
+    </section>
+
+    <section style="background: #080810;">
+        <div class="container">
+            <h2 class="reveal delay-1" style="font-size: 40px; margin-bottom: 20px;">Интерактивные элементы</h2>
+            <p class="reveal delay-2" style="color: rgba(255,255,255,0.7);">Каждый элемент реагирует на ваше присутствие.</p>
+            
+            <div class="grid">
+                <div class="card reveal delay-1 tilt-card">
+                    <h3>3D Tilt Effect</h3>
+                    <p>Наведите курсор на эту карточку. Она плавно наклоняется, следуя за движением мыши, создавая ощущение глубины.</p>
+                </div>
+                <div class="card reveal delay-2 tilt-card">
+                    <h3>Magnetic Button</h3>
+                    <p>Кнопка выше в Hero секции — магнитная. Она слегка притягивается к курсору, когда вы проводите рядом.</p>
+                </div>
+                <div class="card reveal delay-3 tilt-card">
+                    <h3>Reveal on Scroll</h3>
+                    <p>Обратите внимание, как блоки появляются при скролле: они не просто всплывают, а каскадно разворачиваются в 3D.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // === ЗАГРУЗКА И LOADER ===
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            // Искусственная задержка для демонстрации лоадера
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                document.body.classList.add('loaded'); // Включает появление секций
+                setTimeout(() => loader.remove(), 800);
+                reveal(); // Запуск первого каскада
+            }, 2000);
+        });
+
+
+        // === ПОЯВЛЕНИЕ БЛОКОВ (REVEAL) ===
+        function reveal() {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(el => {
+                const windowHeight = window.innerHeight;
+                const elementTop = el.getBoundingClientRect().top;
+                const elementVisible = 100; // Плотность скролла
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    el.classList.add('active');
+                }
+            });
+        }
+        window.addEventListener('scroll', reveal);
+
+
+        // === MAGNETIC BUTTON EFFECT ===
+        const mBtns = document.querySelectorAll('.magnetic-btn');
+        mBtns.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                
+                // Сдвигаем кнопку на 30% от дистанции до курсора
+                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+            });
+            
+            btn.addEventListener('mouseleave', () => {
+                // Возвращаем на место
+                btn.style.transform = `translate(0px, 0px)`;
+            });
+        });
+
+
+        // === TILT CARD EFFECT ===
+        const tiltCards = document.querySelectorAll('.tilt-card');
+        tiltCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                // Вычисляем угол наклона (макс 10 градусов)
+                const rotateX = ((y - centerY) / centerY) * -10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                // Сброс наклона
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+            });
+        });
+
+    </script>
+</body>
+</html>
